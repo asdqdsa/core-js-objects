@@ -155,8 +155,45 @@ function makeWord(lettersObject) {
  *    sellTickets([25, 25, 50]) => true
  *    sellTickets([25, 100]) => false (The seller does not have enough money to give change.)
  */
-function sellTickets(/* queue */) {
-  throw new Error('Not implemented');
+function sellTickets(queue) {
+  const res = queue.reduce(
+    (acc, coin) => {
+      if (!acc.status) return acc;
+      const cash = { ...acc };
+
+      switch (coin) {
+        case 25:
+          cash['25'] += 1;
+          break;
+
+        case 50:
+          cash['50'] += 1;
+          if (cash['25'] === 0) cash.status = false;
+          else cash['25'] -= 1;
+          break;
+
+        case 100:
+          if (cash['25'] >= 1 && cash['50'] >= 1) {
+            cash['25'] -= 1;
+            cash['50'] -= 1;
+          } else if (cash['25'] >= 3) cash['25'] -= 3;
+          else cash.status = false;
+          break;
+
+        default:
+          break;
+      }
+
+      return cash;
+    },
+    {
+      25: 0,
+      50: 0,
+      status: true,
+    }
+  );
+
+  return res.status;
 }
 
 /**
@@ -172,8 +209,14 @@ function sellTickets(/* queue */) {
  *    console.log(r.height);      // => 20
  *    console.log(r.getArea());   // => 200
  */
-function Rectangle(/* width, height */) {
-  throw new Error('Not implemented');
+function Rectangle(width, height) {
+  Object.defineProperties(this, {
+    width: { get: () => width },
+    height: { get: () => height },
+    getArea: { value: () => this.width * this.height },
+  });
+
+  return this;
 }
 
 /**
@@ -186,8 +229,8 @@ function Rectangle(/* width, height */) {
  *    [1,2,3]   =>  '[1,2,3]'
  *    { height: 10, width: 20 } => '{"height":10,"width":20}'
  */
-function getJSON(/* obj */) {
-  throw new Error('Not implemented');
+function getJSON(obj) {
+  return JSON.stringify(obj);
 }
 
 /**
@@ -201,8 +244,10 @@ function getJSON(/* obj */) {
  *    const r = fromJSON(Circle.prototype, '{"radius":10}');
  *
  */
-function fromJSON(/* proto, json */) {
-  throw new Error('Not implemented');
+function fromJSON(proto, json) {
+  const obj = Object.create(proto);
+  const data = JSON.parse(json);
+  return Object.assign(obj, data);
 }
 
 /**
